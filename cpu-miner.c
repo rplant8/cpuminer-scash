@@ -1148,6 +1148,14 @@ static void stratum_gen_work(struct stratum_ctx *sctx, struct work *work)
 	work->data[20] = 0x80000000;
 	work->data[31] = 0x00000280;
 
+	char epochSeedString[100];
+	memset(epochSeedString, 0, sizeof(epochSeedString));
+	uint32_t curtime;
+	curtime = (uint32_t) be32dec(&work->data[17]);;
+	uint32_t nEpoch = curtime/604800;
+	sprintf(epochSeedString, "Scash/RandomX/Epoch/%d", nEpoch);
+	sha256d(work->randomx_seed_hash, epochSeedString, strlen(epochSeedString));
+
 	pthread_mutex_unlock(&sctx->work_lock);
 
 	if (opt_debug) {
@@ -1157,10 +1165,10 @@ static void stratum_gen_work(struct stratum_ctx *sctx, struct work *work)
 		free(xnonce2str);
 	}
 
-	if (opt_algo == ALGO_SCRYPT)
+//	if (opt_algo == ALGO_SCRYPT)
 		diff_to_target(work->target, sctx->job.diff / 65536.0);
-	else
-		diff_to_target(work->target, sctx->job.diff);
+//	else
+//		diff_to_target(work->target, sctx->job.diff);
 }
 
 static void *miner_thread(void *userdata)

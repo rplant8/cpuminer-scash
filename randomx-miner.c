@@ -25,6 +25,7 @@ int scanhash_randomx(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
     // Construct blockheader in serialized little endian form (code from submit work function)
     uint32_t blockHeader[28];
     memset(blockHeader, 0, sizeof(blockHeader)); // make sure rx_hash field is zero for rx hash and cm computation
+
     for (int i = 0; i < 20; i++)
     {
         be32enc(blockHeader + i, pdata[i]);
@@ -39,12 +40,12 @@ int scanhash_randomx(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
 
         randomx_calculate_commitment((void *)blockHeader, sizeof(blockHeader), &rx_hash, &rx_cm);
 
+	*hashes_done = n - pdata[19] + 1;
+
         if (((const uint32_t *)rx_cm)[7] < Htarg)
         {
             if (fulltest((void *)rx_cm, ptarget))
             {
-                *hashes_done = n - pdata[19] + 1;
-
                 // Note: Encode nonce into buffer as big endian, so it gets flipped back to little endian when submitting to node
                 be32enc((void *)&pdata[19], n);
 
