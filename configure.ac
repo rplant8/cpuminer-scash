@@ -1,4 +1,4 @@
-AC_INIT([cpuminer],[3.0.1])
+AC_INIT([cpuminer],[3.0.2])
 
 AC_PREREQ([2.59c])
 AC_CANONICAL_TARGET
